@@ -363,8 +363,8 @@
     "FHIR": {
       "relevant_to": "doc.type === 'person'",
       "destination": {
-        "base_url": "http://nubuntu.plip.com",
-        "path": "/httpdump/"
+        "base_url": "https://hapi.fhir.org/baseR4/Patient",
+        "path": ""
       },
       "mapping": {
         "resourceType": {
