@@ -1,0 +1,43 @@
+{
+    "resourceType": "Encounter",
+    "identifier": [
+      {
+        "use": "temp",
+        "value": "735bb176-bc60-4cc6-b854-7dd37c2ccf96"
+      }
+    ],
+    "class": {
+      "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+      "code": "FLD",
+      "display": "CHW Visit"
+    },
+    "subject": {
+      "reference": "TODO - enter slug from patient resource",
+      "display": "Jacobs Jeffery"
+    },
+    "type": [
+      {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "11429006",
+            "display": "Consultation"
+          }
+        ]
+      }
+    ],  
+    "priority": {
+        "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "17621005",
+          "display": "Normal"
+        }
+      ]
+    },
+    "reasonCode": [
+        {
+            "text": "The patient seen for treatment of tuberculosis"
+        }
+    ]
+}

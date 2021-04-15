@@ -1,0 +1,35 @@
+{
+    "resourceType": "Patient",
+    "name": [
+        {
+            "use": "official",
+            "given": ["Nsikak"],
+            "family": "Akpakpan"
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1963-07-04",
+    "telecom": [
+        {
+            "value": "6305307544",
+            "use": "work",
+            "system": "phone"
+
+        },
+        {
+            "system": "email",
+            "use": "work",
+            "value": "nsikak.e.akpakpan@accenture.com"
+        }
+    ],
+    "address": [
+        {
+            "line": ["250 W. Kimbell Avenue"],
+            "city": "Elmhurst",
+            "district": "DuPage",
+            "state": "Illinois",
+            "postalCode": "60126",
+            "country": "USA"
+        }
+    ]
+}

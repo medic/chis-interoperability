@@ -1,0 +1,61 @@
+{
+    "case_id": "6d834c6a1be24d81a3385e530c84f901",
+    "case_json": {
+        "bahmni_id": "GAN203005",
+        "bmi": "21.04",
+        "caste": "other",
+        "class": "general",
+        "dob": "1981-04-25T18:30:00.000000Z",
+        "estimate_dob": "false",
+        "family_name": "Shah",
+        "given_name": "Amit",
+        "height": "185.0",
+        "middle_name": "Kaushik",
+        "sex": "M",
+        "village": "London",
+        "weight": "72.0"
+    },
+    "closed": false,
+    "closed_by": null,
+    "closed_on": null,
+    "deleted": false,
+    "domain": "nhooper",
+    "external_id": "e8aa08f6-86cd-42f9-8924-1b3ea021aeb4",
+    "id": 9439172,
+    "indices": [],
+    "location_id": null,
+    "modified_by": "3c6d579a8abdddd07c033d1725b10735",
+    "modified_on": "2018-11-21T17:20:07.440245Z",
+    "name": "Amit Kaushik Shah",
+    "opened_by": "3c6d579a8abdddd07c033d1725b10735",
+    "opened_on": "2018-11-21T00:00:00.000000Z",
+    "owner_id": "3c6d579a8abdddd07c033d1725b10735",
+    "server_modified_on": "2018-11-21T17:20:07.446018Z",
+    "transactions": [
+        {
+            "date": "2018-11-21T15:00:07.577104Z",
+            "details": {},
+            "form_id": "3c4c108c7c034984962bf556c23fca38",
+            "server_date": "2018-11-21T15:00:08.004073Z",
+            "sync_log_id": null,
+            "type": "form / case_create"
+        },
+        {
+            "date": "2018-11-21T17:20:04.952983Z",
+            "details": {},
+            "form_id": "e28bdcf25a014c1c97945f4d05efb189",
+            "server_date": "2018-11-21T17:20:05.193315Z",
+            "sync_log_id": null,
+            "type": "form"
+        },
+        {
+            "date": "2018-11-21T17:20:07.440245Z",
+            "details": {},
+            "form_id": "4944f6eb5f684939882659ed60a698ed",
+            "server_date": "2018-11-21T17:20:07.446018Z",
+            "sync_log_id": null,
+            "type": "form"
+        }
+    ],
+    "type": "patient"
+}

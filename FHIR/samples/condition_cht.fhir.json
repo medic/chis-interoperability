@@ -1,0 +1,72 @@
+{
+    "resourceType": "Condition",
+    "subject": {
+        "reference": "TODO -- enter slug from encounter resource",
+        "display": "Condition for Jacobs Jeffery's encounter"
+        },
+    "clinicalStatus": {
+         "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                "code": "active"
+                }
+            ]
+        },
+    "verificationStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                "code": "confirmed"
+                }
+            ]
+        },
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
+                    },
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "439401001",
+                    "display": "Diagnosis"
+                    }
+                ]
+            }
+        ],
+    "severity": {
+        "coding": [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "6736007",
+                "display": "Moderate"
+                }
+            ]
+        },
+    "code": {
+        "coding": [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "56717001",
+                "display": "Tuberculosis"
+                }
+            ],
+        "text": "Tuberculosis treatment"
+        },
+    "bodySite": [
+        {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "1650005",
+                    "display": "Hilum of the left Lung"
+                    }
+                ],
+            "text": "Left Upper Lung"
+            }
+        ],
+    "onsetDateTime": "2019-01-06"
+    }
+  

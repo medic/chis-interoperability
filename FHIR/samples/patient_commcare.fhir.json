@@ -1,0 +1,21 @@
+{
+    "resourceType":"Patient",
+    "birthDate": "1981-04-25",
+    "name": [
+        {
+            "use": "usual",
+            "family": "Shah",
+            "given": [
+                "Amit Kaushik"
+            ] 
+        }
+    ],
+    "gender": "male",
+    "identifier": [
+        {
+            "use": "usual",
+            "value": "commcare/9439172"
+        }
+    ],
+    "active": true
+}

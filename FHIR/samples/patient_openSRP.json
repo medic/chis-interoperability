@@ -1,0 +1,32 @@
+{
+  "firstName": "Paul",
+  "middleName": "Gilbert",
+  "lastName": "Gil",
+  "birthdate": "1990-05-02T03:00:00.000+03:00",
+  "birthdateApprox": false,
+  "deathdateApprox": false,
+  "gender": "Male",
+  "relationships": {
+    "family": [
+      "fd29fce8-a477-4ff1-a71f-fd390b64074d"
+    ]
+  },
+  "baseEntityId": "5352e124-12fa-4d63-8737-06226643804e",
+  "identifiers": {
+    "opensrp_id": "1272319"
+  },
+  "addresses": [],
+  "attributes": {
+    "Community_Leader": "[\"chk_religious\"]",
+    "Health_Insurance_Type": "AAR Healthcare",
+    "Health_Insurance_Number": "whhdfh"
+  },
+  "dateCreated": "2019-05-03T02:17:51.467+03:00",
+  "dateEdited": "2019-05-02T23:19:36.087+03:00",
+  "serverVersion": 1556828379781,
+  "clientApplicationVersion": 1,
+  "clientDatabaseVersion": 8,
+  "type": "Client",
+  "id": "887245ed-62fa-4bf2-8936-4b2ed0f699ce",
+  "revision": "v3"
+}
