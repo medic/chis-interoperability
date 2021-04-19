@@ -30,10 +30,14 @@ These steps use the OpenHIE Instante repo using the [docker-compose steps](https
 1. Visit [the heartbeat URL](https://cop.app.medicmobile.org:8080/heartbeat) and accept the self signed certificate. This is required for the next step as the console will fail to do a `POST` to the FHIR core unless the certificate is accepted first.
 1. Finally, you should be to log in on the [FHIR admin console](cop.app.medicmobile.org:9000) with username `root@openhim.org` and password `instant101`
 
-## Restart, Shut-down & Deleting
+## Docker Restart, Shut-down & Delete
 
 `cd` into the cloned repo: `cd /srv/chis/instant/core/docker` directory. Then:
 
 * To shut-down the containers run `./compose.sh down` to stop the instances.
 * To then restart the containers, run `./compose.sh up`. You do not need to run `init` again like you did in install above.
-* To shut-down and delete everything, run `./compose.sh destroy`
+* To shut-down and delete *everything*, run `./compose.sh destroy`
+
+## OS reboots
+
+Currently if the server is rebooted, Docker needs to be restarted with `/srv/chis/instant/core/docker/compose.sh up`
