@@ -8,14 +8,21 @@ if [ "$1" == "init" ]; then
     # Set up the replica set
     "$composeFilePath"/initiateReplicaSet.sh
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml  -f "$composeFilePath"/importer/docker-compose.config.yml up
+
+    # Wait for first time run to be done
+    sleep 20
+    ehco ""
+    echo "Please exit with 'ctrl + c'' and run './compose.sh up' to start service normally"
+    echo ""
+
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml up -d
 
     # Wait for mongo replica set to be set up
     sleep 20
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml  -d
 elif [ "$1" == "down" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
 elif [ "$1" == "destroy" ]; then

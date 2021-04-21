@@ -17,11 +17,10 @@ services:
       - "5051:5051"
       - "5052:5052"
 
+  # this service exposed via nginx_proxy
   console:
     container_name: openhim-console
     image: jembi/openhim-console:1.14
-    ports:
-        - "9000:80"
 
   fhir:
     container_name: hapi-fhir
@@ -54,7 +53,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: production_nginx
+    container_name: nginx-proxy
     volumes:
       - ./nginx/nginx.conf/:/etc/nginx/nginx.conf/
       - ./nginx/error.log:/etc/nginx/error_log.log
