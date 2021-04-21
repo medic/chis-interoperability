@@ -8,11 +8,9 @@ if [ "$1" == "init" ]; then
     # Set up the replica set
     "$composeFilePath"/initiateReplicaSet.sh
 
-    echo ""
-    echo "After docker-compose runs, exit with 'ctrl + c'' and run './compose.sh up' to start service normally"
-    echo ""
-    sleep 5
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml  -f "$composeFilePath"/importer/docker-compose.config.yml up
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml  up -d
+
+    curl -sk -X POST -H "Content-Type: application/json"  -d @./importer/volume/openhim-import.json -k --user root\@openhim.org:openhim-password https://cop.app.medicmobile.org:8080/metadata
 
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml up -d
