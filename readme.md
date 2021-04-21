@@ -2,31 +2,28 @@
 
 ## Overview 
 
-TBD
+These steps use code directly take from the [OpenHIE Instant](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS interoperability](https://github.com/medic/chis-interoperability) to provision an instance of the OpenHIE Instant on `cop.app.medicmobile.org`.
 
 ## Prerequisites 
 
-These steps use the OpenHIE Instante repo using the [docker-compose steps](https://github.com/openhie/instant/tree/master/core/docker). It assumes you have:
   * dedicated Ubuntu 18.04 server
   * static IP
   * have DNS entry pointing to the static IP.  We'll be using `cop.app.medicmobile.org`. 
-  * sudo 
-  
-Be sure to install the needed software before getting started:
-1. Install `certbot` per [their instructions](https://certbot.eff.org/).  
-1. Ensure `docker` and `docker-compose` are installed per the [Instant OpenHIE Prerequisites](https://github.com/openhie/instant/tree/master/core/docker#prerequisites).
+  * user with `sudo` 
+  * `certbot` [installed](https://certbot.eff.org/).  
+ *  `docker` and `docker-compose` [installed](https://github.com/openhie/instant/tree/master/core/docker#prerequisites).
 
 ## Install
 
-Start by `cd`ing into the `/srv/chis/` directory and ensure your user has `sudo` perms.
+This process is safe to re-run entirely or sub-sections:
 
+1. `cd` into the `/srv/chis/` directory
 1. Get certificates for your domain via `certbot` with `sudo certbot certonly --nginx`.  
 
    Ensure the certficates are in `/etc/letsencrypt/live` when this command is done.
 1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.
-1. Create the persistant `instant` storage for Docker: `docker volume create --name=instant` 
 1. Initialize and start the system by calling `./compose.sh init`
 1. After the `docker-compose` call inside the `compose.sh` script has been running for a few minutes, `ctrl + c` to exit out.
 1. Start the Instant OpenHIE process normally with `./compose up` 
