@@ -6,11 +6,21 @@ TBD
 
 ## Install
 
-These steps use the OpenHIE Instante repo using the [docker-compose steps](https://github.com/openhie/instant/tree/master/core/docker). Start by `cd`ing into the `/srv/chis/` directory and ensure your user has `sudo` perms.
+These steps use the OpenHIE Instante repo using the [docker-compose steps](https://github.com/openhie/instant/tree/master/core/docker). It assumes you have:
+  * dedicated Ubuntu 18.04 server
+  * static IP
+  * have DNS entry pointing to the static IP.  We'll be using `cop.app.medicmobile.org`. 
+  * sudo 
 
+Start by `cd`ing into the `/srv/chis/` directory and ensure your user has `sudo` perms.
+
+1. Install `certbot` per [their instructions](https://certbot.eff.org/).
+1. Get certificates for your domain via `certbot` with `sudo certbot certonly --nginx`.  
+
+   Ensure the certficates are in `/etc/letsencrypt/live` when this command is done.
 1. Ensure Docker and Docker Compose are installed per the [Instant OpenHIE Prerequisites](https://github.com/openhie/instant/tree/master/core/docker#prerequisites).
-1. Check out the repo `git clone https://github.com/openhie/instant.git`
-1. `cd` into the newly cloned repo into the `./instant/core/docker` directory
+1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
+1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.
 1. Initialize and start the system by calling `./compose.sh init`
 1. Check the install is successful with `docker ps`. The output should show 7 containers like this:
@@ -28,7 +38,16 @@ These steps use the OpenHIE Instante repo using the [docker-compose steps](https
    If you're quick on the draw, you may see an 8th container called `jembi/instantohie-config-importer`. This is an artifact of calling `init` and will go away so there will only be 7 containers.
 1. Set OpenHIM Console to use `cop.app.medicmobile.org` instead of `localhost`: `docker exec -it openhim-console sh -c "sed -i 's/localhost/cop.app.medicmobile.org/g' config/default.json"`
 1. Visit [the heartbeat URL](https://cop.app.medicmobile.org:8080/heartbeat) and accept the self signed certificate. This is required for the next step as the console will fail to do a `POST` to the FHIR core unless the certificate is accepted first.
-1. Finally, you should be to log in on the [FHIR admin console](cop.app.medicmobile.org:9000) with username `root@openhim.org` and password `instant101`
+1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with username `root@openhim.org` and password `instant101`
+1. The `openhim-core` container seems to get "stuck" often. This causes all `http` requests to port `8080` to only respond with `404`s, thus breaking all integrations.    
+
+   The fix to this, for now, is to restart the `openhim-core` container every hour.  Do this by creating a cronjob for the root user:
+   1. `sudo su -`
+   1. `crontab -e`
+   1. Add a line at the end that is:
+      ```bash
+      0 * * * * /usr/bin/docker restart openhim-core
+      ```
 
 ## Docker Restart, Shut-down & Delete
 
