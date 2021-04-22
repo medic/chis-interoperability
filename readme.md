@@ -2,7 +2,22 @@
 
 ## Overview 
 
-These steps use code directly take from the [OpenHIE Instant](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS interoperability](https://github.com/medic/chis-interoperability) to provision an instance of the OpenHIE Instant on `cop.app.medicmobile.org`.
+These steps use code directly take from the [OpenHIE Instant](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS Interoperability repository](https://github.com/medic/chis-interoperability) to provision an instance of the Instant OpenHIE on `cop.app.medicmobile.org`.
+
+### Services
+
+Services are currently available at these URLs:
+
+* **OpenHIM Admin Console** - [https://cop.app.medicmobile.org:9001/](https://cop.app.medicmobile.org:9001/) 
+* **OpenHIM** - [https://cop.app.medicmobile.org:5003/](https://cop.app.medicmobile.org:5003/) (Do not use the insecure port on 5000 or 5001)
+* **HAPI FHIR** - Currently only accessible via SSH tunnel:
+   1. Confirm which IP is being used by `hapi-fire` container (likely this won't change, only check once) by running this on the main server: 
+   
+      `docker inspect hapi-fhir|grep '"IPAddress": "172'`
+   1. Set up tunnel via SSH (assumes IP from prior step is `172.24.0.9`):
+   
+      `ssh -L 8080:172.24.0.9:8080 cop.app.medicmobile.org  -p 33696`
+   1. Go to [http://localhost:8080](http://localhost:8080) in your browser
 
 ## Prerequisites 
 
@@ -15,7 +30,7 @@ These steps use code directly take from the [OpenHIE Instant](https://github.com
 
 ## Install
 
-This process is safe to re-run entirely or sub-sections:
+This process is safe to re-run entirely or in sub-sections:
 
 1. `cd` into the `/srv/chis/` directory
 1. Get certificates for your domain via `certbot` with `sudo certbot certonly --nginx`.  
@@ -25,9 +40,7 @@ This process is safe to re-run entirely or sub-sections:
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.
 1. Initialize and start the system by calling `./compose.sh init`
-1. After the `docker-compose` call inside the `compose.sh` script has been running for a few minutes, `ctrl + c` to exit out.
-1. Start the Instant OpenHIE process normally with `./compose up` 
-1. Check the `up` call is successful with `docker ps`. The output should show 8 containers like this:
+1. Check the `init` call was successful with `docker ps`. The output should show 8 containers like this:
  
     ```bash
     CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                     NAMES
@@ -40,9 +53,8 @@ This process is safe to re-run entirely or sub-sections:
     f9986917f559   mongo:4.2                    "docker-entrypoint.s…"   4 hours ago      Up 30 minutes   27017/tcp                                                                                                                                                                 mongo-2
     18b17cf57d6b   mongo:4.2                    "docker-entrypoint.s…"   4 hours ago      Up 30 minutes   27017/tcp                                                                                                                                                                 mongo-3
     ``` 
-1. Set OpenHIM Console to use `cop.app.medicmobile.org` buy running this call: `docker exec -it openhim-console sh -c "sed -i 's/localhost/cop.app.medicmobile.org/g' config/default.json"`
 1. Visit [the heartbeat URL](https://cop.app.medicmobile.org:8080/heartbeat) and accept the self signed certificate. This is required for the next step as the console will fail to do a `POST` to the FHIR core unless the certificate is accepted first.
-1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with the defaulte username `root@openhim.org` and password `instant101`. You should now change the `root@openhim.org`  password as well as the [Client password](https://cop.app.medicmobile.org:9001/#!/clients) for the `test` client. 
+1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with the defaulte username `root@openhim.org` and password `instant101`. Change the `root@openhim.org` password as well as the [Client password](https://cop.app.medicmobile.org:9001/#!/clients) for the `test` client. Create any additional logins that are needed.
 1. The `openhim-core` container seems to get "stuck" often. This causes all `http` requests to port `8080` to only respond with `404`s, thus breaking all integrations.    
 
    The fix to this, for now, is to restart the `openhim-core` container every hour.  Do this by creating a cronjob for the root user:
