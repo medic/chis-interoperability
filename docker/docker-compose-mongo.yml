@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  mongo-1:
+    image: mongo:4.2
+    container_name: mongo-1
+    volumes:
+      - 'openhim-mongo1:/data/db'
+    command:
+        - --replSet
+        - mongo-set
+
+  mongo-2:
+    image: mongo:4.2
+    container_name: mongo-2
+    volumes:
+      - 'openhim-mongo2:/data/db'
+    command:
+        - --replSet
+        - mongo-set
+
+  mongo-3:
+    image: mongo:4.2
+    container_name: mongo-3
+    volumes:
+      - 'openhim-mongo3:/data/db'
+    command:
+        - --replSet
+        - mongo-set
+
+volumes:
+  openhim-mongo1:
+  openhim-mongo2:
+  openhim-mongo3:
