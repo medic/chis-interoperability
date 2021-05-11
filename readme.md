@@ -23,6 +23,8 @@ Services are currently available at these URLs:
 
   * dedicated Ubuntu 18.04 server
   * static IP
+  * 8 GB RAM / 30GB Disk
+  * run all commands as a non-root user with `sudo` perms
   * have DNS entry pointing to the static IP.  We'll be using `cop.app.medicmobile.org`. 
   * user with `sudo` 
   * `certbot` [installed](https://certbot.eff.org/).  
@@ -55,15 +57,6 @@ This process is safe to re-run entirely or in sub-sections:
     ``` 
 1. Visit [the heartbeat URL](https://cop.app.medicmobile.org:8080/heartbeat) and accept the self signed certificate. This is required for the next step as the console will fail to do a `POST` to the FHIR core unless the certificate is accepted first.
 1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with the defaulte username `root@openhim.org` and password `instant101`. Change the `root@openhim.org` password as well as the [Client password](https://cop.app.medicmobile.org:9001/#!/clients) for the `test` client. Create any additional logins that are needed.
-1. The `openhim-core` container seems to get "stuck" often. This causes all `http` requests to port `8080` to only respond with `404`s, thus breaking all integrations.    
-
-   The fix to this, for now, is to restart the `openhim-core` container every hour.  Do this by creating a cronjob for the root user:
-   1. `sudo su -`
-   1. `crontab -e`
-   1. Add a line at the end that is:
-      ```bash
-      0 * * * * /usr/bin/docker restart openhim-core
-      ```
 
 ## Docker Restart, Shut-down & Delete
 
