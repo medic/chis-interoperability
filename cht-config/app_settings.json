@@ -396,6 +396,43 @@
           "optional": false
         }
       }
+    },
+    "FHIR_practitioner": {
+      "relevant_to": "doc.type === 'person' && (doc.role == 'chw' || doc.role == 'nurse' )",
+      "destination": {
+        "base_url": "https://cop.app.medicmobile.org:5002",
+        "path": "/fhir/Practitioner",
+        "auth": {
+          "type": "basic",
+          "username": "cht",
+          "password_key": "cop.app.medicmobile.org"
+        }
+      },
+      "mapping": {
+        "resourceType": {
+          "expr": "'Patient'"
+        },
+        "gender": "doc.sex",
+        "name": {
+          "expr": "[ { \"use\":\"official\", \"family\": doc.name , \"given\": [ doc.short_name ] } ]",
+          "optional": false
+        },
+        "identifier.use": {
+          "expr": "'usual'"
+        },
+        "identifier.value": {
+          "expr": "'cht/'.concat(doc._id)"
+        },
+        "birthDate": "doc.date_of_birth",
+        "telecom": {
+          "expr": "[{ \"system\":\"phone\", \"value\": doc.phone, \"use\":\"mobile\" } ]",
+          "optional": true
+        },
+        "active": {
+          "expr": true,
+          "optional": false
+        }
+      }
     }
   }
 }
