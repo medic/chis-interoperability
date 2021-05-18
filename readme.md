@@ -9,7 +9,7 @@ These steps use code directly take from the [OpenHIE Instant](https://github.com
 Services are currently available at these URLs:
 
 * **OpenHIM Admin Console** - [https://cop.app.medicmobile.org:9001/](https://cop.app.medicmobile.org:9001/) 
-* **OpenHIM** - [https://cop.app.medicmobile.org:5003/](https://cop.app.medicmobile.org:5003/) (Do not use the insecure port on 5000 or 5001)
+* **OpenHIM** - [https://cop.app.medicmobile.org:5002/](https://cop.app.medicmobile.org:5002/) (Do not use the insecure port on 5000 or 5001)
 * **HAPI FHIR** - Currently only accessible via SSH tunnel:
    1. Confirm which IP is being used by `hapi-fire` container (likely this won't change, only check once) by running this on the main server: 
    
@@ -19,6 +19,26 @@ Services are currently available at these URLs:
       `ssh -L 8080:172.24.0.9:8080 cop.app.medicmobile.org  -p 33696`
    1. Go to [http://localhost:8080](http://localhost:8080) in your browser
 
+
+### OpenHIM Configuration
+
+OpenHIM has this configuration:
+
+Channels:
+* `/fhir/*` - any requests to `https://cop.app.medicmobile.org:5002/fhir/*` are routed to the FHIR server.  Currently this includes `/fhir/Patient` and `/fhir/Provider`
+
+Clients:
+
+See `sudo cat ~root/logins.txt` for credentials for these on `cop.app.medicmobile.org`.  Each integration should use their login so that OpenHIM can track which system made the call:
+
+* `cht`
+* `opensrp`
+* `commcare` 
+
+Mediators:
+
+Currently none, but presumably some will be used to integrate with OpenSRP.
+
 ## Prerequisites 
 
   * dedicated Ubuntu 18.04 server
@@ -26,7 +46,6 @@ Services are currently available at these URLs:
   * 8 GB RAM / 30GB Disk
   * run all commands as a non-root user with `sudo` perms
   * have DNS entry pointing to the static IP.  We'll be using `cop.app.medicmobile.org`. 
-  * user with `sudo` 
   * `certbot` [installed](https://certbot.eff.org/).  
  *  `docker` and `docker-compose` [installed](https://github.com/openhie/instant/tree/master/core/docker#prerequisites).
 
@@ -68,4 +87,4 @@ This process is safe to re-run entirely or in sub-sections:
 
 ## OS reboots
 
-Currently if the server is rebooted, Docker needs to be restarted with `/srv/chis/instant/core/docker/compose.sh up`
+Currently, if the server is rebooted, Docker needs to be restarted with `/srv/chis/instant/core/docker/compose.sh up`
