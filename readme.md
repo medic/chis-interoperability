@@ -60,7 +60,7 @@ This process is safe to re-run entirely or in sub-sections:
 1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.
-1. Initialize and start the system by calling `./compose.sh init`
+1. Initialize and start the system by calling `./compose.sh init`. This command can take a good 5 minutes to run - please be patient before proceeding to the next step.
 1. Check the `init` call was successful with `docker ps`. The output should show 8 containers like this:
  
     ```bash
