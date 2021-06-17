@@ -10,7 +10,6 @@ services:
       - api_authenticationTypes=["token", "basic"]
       - authentication_enableCustomTokenAuthentication=true
     ports:
-      - "8080:8080"
       - "5000:5000"
       - "5001:5001"
       - "5050:5050"
@@ -60,6 +59,7 @@ services:
       - ./nginx/cache/:/etc/nginx/cache
       - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
+      - 8080:8080
       - 9001:9001
       - 5002:5002
 
