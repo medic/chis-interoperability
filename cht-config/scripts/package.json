@@ -1,0 +1,14 @@
+{
+  "name": "chis-interoperability-cht-scripts",
+  "version": "3.12.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medic/chis-interoperability.git"
+  },
+  "devDependencies": {
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.8"
+  }
+}
