@@ -48,23 +48,30 @@ const execute = async () => {
   let user = [];
   try {
     user = await rpn.get(options);
-
-    const postOptions = Object.assign({}, options);
-    postOptions.uri = url.href + '?rev=' + user._rev;
-    user[argv.field] = argv.value;
-    postOptions.body = user;
-    try {
-      await rpn.put(postOptions);
-    } catch (e) {
-      console.log('An error while updating the user - ', e.message);
-      process.exit(0);
-    }
   } catch (e) {
     console.log('An error while getting the user - ', e.message);
     process.exit(0);
   }
+
+  console.log('Found user ');
+  console.log('     Name: ' + user.name);
+  console.log('     Rev: ' + user._rev);
+  console.log('     ' + argv.field + ' old value: ' + user[argv.field]);
+
+  const postOptions = Object.assign({}, options);
+  postOptions.uri = url.href + '?rev=' + user._rev;
+  user[argv.field] = argv.value;
+  postOptions.body = user;
+  
+  try {
+    await rpn.put(postOptions);
+  } catch (e) {
+    console.log('An error while updating the user - ', e.message);
+    process.exit(0);
+  }
+
+  console.log('success');
 };
 
-console.log('success')
 
 execute();
