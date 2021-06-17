@@ -34,3 +34,4 @@ elif [ "$1" == "destroy" ]; then
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
+
