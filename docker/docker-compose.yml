@@ -53,11 +53,6 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
-    volumes:
-      - ./nginx/nginx.conf/:/etc/nginx/nginx.conf/
-      - ./nginx/error.log:/etc/nginx/error_log.log
-      - ./nginx/cache/:/etc/nginx/cache
-      - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
       - 8080:8080
       - 9001:9001
