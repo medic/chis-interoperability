@@ -28,13 +28,14 @@ if [ "$1" == "init" ]; then
     echo "Initializing OpenHIM and configuring hostname"
     echo ""
     sleep 5
-    curl -k -X POST -H "Content-Type: application/json"  -d @./importer/volume/openhim-import.json -k --user root\@openhim.org:openhim-password https://${configHost}:8080/metadata
-
-    docker exec -it openhim-console sh -c "sed -i 's/localhost/$configHost/g' config/default.json"
 
     if [ "$DEV" != "" ]; then
       ./refresh-local-ip-certs.sh
     fi
+
+    curl -k -X POST -H "Content-Type: application/json"  -d @./importer/volume/openhim-import.json -k --user root\@openhim.org:openhim-password https://${configHost}:8080/metadata
+
+    docker exec -it openhim-console sh -c "sed -i 's/localhost/$configHost/g' config/default.json"
 
     echo ""
     echo "Initialization complete!"
