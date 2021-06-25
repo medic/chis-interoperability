@@ -88,3 +88,14 @@ This process is safe to re-run entirely or in sub-sections:
 ## OS reboots
 
 Currently, if the server is rebooted, Docker needs to be restarted with `/srv/chis/instant/core/docker/compose.sh up`
+
+## Development environment
+
+By leveraging the free wildcard certificates with accompanied DNS entries offered by [local-ip.co](http://local-ip.co), a development instance with valid certificates can easily be set up to enable development with no external dependencies.  This does assume there's sufficient CPU, RAM and Disk resources to run all the Docker containers.
+
+Assuming your ip is `192.168.68.40` and your user has permission to run `docker-compose`, we can simply prepend `DEV=192.168.68.40` to the `compose.sh` script:
+1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
+1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
+1. Initialize the deployment with `DEV=192.168.68.40 ./compose.sh init`.  All subsequent calls of `up`, `down` and `destroy` should be made via `DEV=192.168.68.40 ./compose.sh COMMAND` 
+
+If you have an dev instance that is long running and the certificates expire. you can renew them with `./docker/refresh-local-ip-certs.sh`
