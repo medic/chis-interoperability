@@ -40,9 +40,12 @@ if [ "$1" == "init" ]; then
     echo ""
     echo "Initialization complete!"
     echo ""
-    echo "    OpenHIM Admin Console: https://$configHost:9001"
     echo "    OpenHIM API: https://$configHost:8080"
     echo "    OpenHIM Client Endpoint: https://$configHost:5002"
+    echo ""
+    echo "    OpenHIM Admin Console: https://$configHost:9001"
+    echo "            Initial login: root@openhim.org"
+    echo "         Initial password: instant101"
     echo ""
 
 elif [ "$1" == "up" ]; then
@@ -57,6 +60,10 @@ elif [ "$1" == "up" ]; then
     sleep 20
 
     docker-compose -p instant $dockerFiles up -d
+
+    if [ "$DEV" != "" ]; then
+      ./refresh-local-ip-certs.sh
+    fi
 
     echo ""
     echo "Startup complete!"

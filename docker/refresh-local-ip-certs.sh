@@ -20,7 +20,6 @@ if [ "$( docker container inspect -f '{{.State.Status}}' 'nginx-proxy' )" == "ru
   docker restart nginx-proxy
   echo ""
   echo "Certificate update complete!"
-  echo ""
 else
   echo ""
   echo "'nginx-proxy' docker container is not running. Please start it and try again."
