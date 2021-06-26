@@ -49,9 +49,18 @@ services:
     volumes:
       - 'hapi-mysql:/var/lib/mysql'
 
+  diym:
+    container_name: diym
+    build: ../DIYM/.
+
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
+    depends_on:
+      - fhir
+      - core
+      - console
+      - diym
     ports:
       - 8080:8080
       - 9001:9001
