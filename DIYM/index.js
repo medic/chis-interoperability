@@ -1,4 +1,3 @@
-
 console.log('START')
 
 import request from 'request-promise-native'
@@ -9,7 +8,7 @@ app.use(express.json());
 
 
 // todo - put URL, login, password in a config file - add dist of config file
-const OpenHimURL = 'https://test:test@192-168-68-40.my.local-ip.co:5002'
+const OpenHimURL = 'https://test:tesst@192-168-68-40.my.local-ip.co:5002'
 
 // Allow port override for testing
 let port = 5051
@@ -25,24 +24,33 @@ if(process.env.DEV_PORT){
 // todo - add authentication to this request
 app.post('/join_object/:foriegnSystem', function (req, res) {
     let himId
-    console.log('GOT POST')
+    let sent = false
     const foriegnSystem = req.params.foriegnSystem.toLowerCase()
     const cht_id = req.body.identifier.value
     if (foriegnSystem == 'cht' && cht_id != undefined){
-        console.log('   GOT CHT ID: ' , cht_id)
-        himId = getOpenHimIdByForiegnId(OpenHimURL, 'Patient', cht_id)
-        console.log('   himId: ', himId)
+        getOpenHimIdByForiegnId(OpenHimURL, 'Patient', cht_id)
+            .then(himId => {
+                if (himId != false) {
+                    let status = 200;
+                    res.status(status).send({'id': himId, 'result': 'found'})
+                } else {
+                    let status = 404;
+                    res.status(status).send({'id': '', 'result': 'not_found'})
+                }
+            })
+            .catch(e => {
+                let status = 500;
+                res.status(status).send({ 'id': '', 'result' : 'error' })
+            })
     }
-    res.send('  Thanks!')
     console.log('   DONE')
 })
-
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}...`)
 })
 
-const getOpenHimIdByForiegnId = async function(openHimURL, objectType, foriegnId){
+const getOpenHimIdByForiegnId = function(openHimURL, objectType, foriegnId){
     let url
     let result
     const queryPath = '/fhir/' + objectType + '?identifier=' + foriegnId
@@ -58,20 +66,16 @@ const getOpenHimIdByForiegnId = async function(openHimURL, objectType, foriegnId
         json: true
     };
 
-    try {
-        result = await request.get(options);
-    } catch (e) {
-        console.log('An error while getting the user - ', e.message);
-        process.exit(0);
-    } finally {
-        // console.log('get result: ', result)
-        if (typeof result.entry == 'object' && result.entry[0].resource.id != undefined){
-            console.log('found result: ', result.entry[0].resource.id)
-            return result.entry[0].resource.id
-        }
-
-        console.log('failed for ID "', foriegnId, '", result was: ', result)
-        return false
-    }
+    return request.get(options)
+        .then(result => {
+            if (typeof result.entry == 'object' && result.entry[0].resource.id != undefined){
+                return result.entry[0].resource.id
+            }
+            return false
+        })
+        .catch(e => {
+            console.log('An error while getting the user - ', e.message);
+            return false
+        })
 
 }
