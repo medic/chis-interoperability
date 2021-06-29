@@ -23,45 +23,34 @@ if(process.env.DEV_PORT){
 //   DEV_PORT=5053 nodemon index.js
 // todo - add authentication to this request
 app.post('/join_object/:foriegnSystem', function (req, res) {
-    let lookupResult
     let sent = false
-    let validId
-    let cht_id
-    let response = {'id':'','result':'error', 'error': ''}
+    let validId, cht_id, status, lookupResult
     const foriegnSystem = req.params.foriegnSystem.toLowerCase()
 
     try {
         cht_id = req.body.identifier.value + 1
         validId = true
     } catch (e) {
-        console.log('Error while reading POST data', e.message);
-        response.error = 'Cannot read POST data. Error: ' + e.message
-        response.result = 'error'
-
-        let status = 500;
-        res.status(status).send(response)
+        console.log('Error in POST data from client', e.message);
+        status = 500;
+        res.status(status).send({ 'id':'','result':'error', 'error': 'Error in POST data from client. Error: ' + e.message })
         validId = false
     }
 
     if (foriegnSystem == 'cht' && validId == true){
-        getOpenHimIdByForiegnId(OpenHimURL, 'Patient', cht_id)
+        getOpenHimId(OpenHimURL, 'Patient', cht_id)
             .then(lookupResult => {
                 if (lookupResult.result == 'found') {
-                    let status = 200;
-                    console.log('Found!', lookupResult);
-                    res.status(status).send(lookupResult)
+                    status = 200;
                 } else if (lookupResult.result == 'not_found') {
-                    let status = 404;
-                    console.log('Note Found!', lookupResult);
-                    res.status(status).send(lookupResult)
+                    status = 404;
                 } else {
-                    let status = 500;
-                    console.log('error!', lookupResult);
-                    res.status(status).send(lookupResult)
+                    status = 500;
                 }
+                res.status(status).send(lookupResult)
             })
             .catch(e => {
-                let status = 500;
+                status = 500;
                 res.status(status).send(lookupResult)
             })
     }
@@ -72,10 +61,10 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}...`)
 })
 
-const getOpenHimIdByForiegnId = function(openHimURL, objectType, foriegnId){
+const getOpenHimId = function(openHimURL, objectType, foriegnId, attempt = 0){
     console.log('getOpenHimIdByForiegnId start ', openHimURL, objectType, foriegnId);
     let url
-    let response = {'id':'','result':'error', 'error': ''}
+    let response = {'id':'','result':'', 'error': ''}
     const queryPath = '/fhir/' + objectType + '?identifier=' + foriegnId
 
     try {
@@ -97,15 +86,26 @@ const getOpenHimIdByForiegnId = function(openHimURL, objectType, foriegnId){
             if (typeof result.entry == 'object' && result.entry[0].resource.id != undefined){
                 response.id = result.entry[0].resource.id
                 response.result = 'found'
-                return response
             } else {
                 response.result = 'not_found'
-                return response
+                // try 4 times in case OpenHIM hasn't processed the data just yet
+                // todo - add 500-1000ms sleep in here
+                while (attempt != 4){
+                    console.log('failed to find ID, retrying, attemp ', attempt)
+                    attempt++
+                    return getOpenHimId(openHimURL, objectType, foriegnId, attempt)
+                }
             }
+            return response
         })
         .catch(e => {
-            console.log('An error while getting the user - ', e.message)
-            response.error = 'getOpenHimIdByForiegnId: ' + e.message
+            if (e.statusCode == 401) {
+                console.log('Bad authentication when getting the user ', e.message)
+                response.error = 'getOpenHimIdByForiegnId: Bad authentication when getting the user ' + e.message
+            } else {
+                console.log('An error while getting the user - ', e.statusCode)
+                response.error = 'getOpenHimIdByForiegnId: ' + e.message
+            }
             response.result = 'error'
             return response
         })
