@@ -1,11 +1,8 @@
-
-
 import request from 'request-promise-native'
 'use strict'
 import express from 'express'
 const app = express()
 app.use(express.json());
-
 
 // todo - put URL, login, password in a config file - add dist of config file
 const OpenHimURL = 'https://test:test@192-168-68-40.my.local-ip.co:5002'
@@ -27,11 +24,12 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
     console.log('')
     console.log('START')
     let sent = false
-    let validId, chtId, status, lookupResult, result
-    const foriegnSystem = req.params.foriegnSystem.toLowerCase()
+    let status = 201
+    let validId, chtId, lookupResult, result
 
     try {
         chtId = req.body.identifier.value
+        // chtId = 'bar'
         validId = true
     } catch (e) {
         console.log('   Error in POST data from client', e.message);
@@ -40,24 +38,20 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
         validId = false
     }
 
+    const foriegnSystem = req.params.foriegnSystem.toLowerCase()
     if (foriegnSystem == 'cht' && validId == true){
         getOpenHimId(OpenHimURL, 'Patient', chtId)
             .then(lookupResult => {
                 if (lookupResult.result == 'found') {
-                    if(chtId.indexOf('cht/') !== -1){
+                    if (chtId.indexOf('cht/') !== -1) {
                         chtId = chtId.split('/')[1]
                     }
-                    console.log('   got him user: ', lookupResult)
-                    console.log('   got cht id: ', chtId)
-                    // result = getChtUser(chtUrl, chtId)
-                    result = setChtExternalId(chtUrl, chtId, lookupResult.id)
-                    status = 200;
-                } else if (lookupResult.result == 'not_found') {
-                    status = 404;
-                } else {
-                    status = 500;
+                    return setChtExternalId(chtUrl, chtId, lookupResult.id)
+                        .then(lookupResult2 => {
+                            sendResult(res, lookupResult2)
+                        })
                 }
-                res.status(status).send(lookupResult)
+                sendResult(res, lookupResult)
             })
             .catch(e => {
                 status = 500;
@@ -65,12 +59,25 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
                 console.log('   Error: ', e.message, e.stack)
             })
     }
-    console.log('   DONE')
 })
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}...`)
 })
+
+const sendResult = function(res, result){
+    let status = 501
+    if (result != undefined) {
+        if ((result.result == 'success' || result.result == 'found')) {
+            status = 200;
+        } else if (result.result == 'not_found') {
+            status = 404;
+        } else if (result.result == 'auth_error') {
+            status = 401;
+        }
+    }
+    res.status(status).send(result)
+}
 
 const getChtUser = function(chtUrl, chtId){
     console.log('   getChtUser start ', chtUrl, chtId)
@@ -81,8 +88,8 @@ const getChtUser = function(chtUrl, chtId){
         url = new URL('/medic/' + chtId, chtUrl)
     } catch(e) {
         console.log('   Error while creating url', e.message)
-        response.error = 'setChtExternalId: Error creating URL ' + e.message
-        response.result = 'erorr'
+        response.error = 'getChtUser: Error creating URL ' + e.message
+        response.result = 'error'
         return response
     }
 
@@ -96,53 +103,78 @@ const getChtUser = function(chtUrl, chtId){
             if (typeof user.parent == 'object' ){
                 response.user = user
                 response.result = 'found'
-                console.log('   getChtUser success: ', response.user.name)
+                console.log('   getChtUser success: ' , user.name)
             } else {
                 response.result = 'not_found'
+                response.error = 'user not found in CHT'
             }
             return response
         })
         .catch(e => {
+            // todo - these errors aren't getting pushed up such that if auth failes against CHT,
+            // upstream callers don't get 'auth_error' in 'result'
             if (e.statusCode == 401) {
+                response.result = 'auth_error'
                 console.log('   Bad authentication when getting the CHT user ', e.message)
                 response.error = 'setChtExternalId: Bad authentication when getting the CHT user ' + e.message
             } else {
+                response.result = 'error'
                 console.log('   An error while getting the CHT user - ', e.stack)
                 response.error = 'setChtExternalId: ' + e.message
             }
-            response.result = 'erorr'
-            response = 'error'
             return response
         })
 }
 
 const setChtExternalId = function(chtUrl, chtId, externalId){
     console.log('   setChtExternalId start ', chtUrl, chtId, externalId)
-    let response
-    getChtUser(chtUrl, chtId)
+    let result, url
+    let user = []
+    let response = {'user':{},'result':'', 'error': ''}
+    return getChtUser(chtUrl, chtId)
         .then(chtUser => {
             if(chtUser.result == 'found') {
+                try {
+                    url = new URL('/medic/' + chtId, chtUrl)
+                } catch(e) {
+                    console.log('   Error while creating url', e.message)
+                    response.error = 'setChtExternalId: Error creating URL ' + e.message
+                    response.result = 'error'
+                    return response
+                }
+                const options = {
+                    uri: url.href,
+                    json: true
+                };
 
-                console.log('   setChtExternalId found cht user ', chtUser.name)
                 const postOptions = Object.assign({}, options)
-                postOptions.uri = url.href + '?rev=' + chtUser._rev
-                chtUser['external_id'] = externalId
-                postOptions.body = chtUser
+                postOptions.uri = url.href + '?rev=' + chtUser.user._rev
+                chtUser.user['external_id'] = externalId
+                postOptions.body = chtUser.user
 
                 try {
                     result = request.put(postOptions)
-                    console.log('success ', result);
-                    return true
+                    response.result = 'success'
+                    console.log('   setChtExternalId: success - ', response);
+                    return response
                 } catch (e) {
-                    console.log('   An error while updating the user - ', e.message);
-                    return false
+                    console.log('   setChtExternalId: An error while updating the user - ', e.message);
+                    response.error = 'setChtExternalId: Error setting URL in CHT ' + e.message
+                    response.result = 'error'
+                    return response
                 }
             }
+        })
+        .catch(e => {
+            console.log('   setChtExternalId: An error while getting the user - ', e.statusCode)
+            response.error = 'setChtExternalId: ' + e.message
+            response.result = 'error'
+            return response
         })
 }
 
 const getOpenHimId = function(openHimURL, objectType, foriegnId, attempt = 0){
-    console.log('   getOpenHimIdByForiegnId start ', openHimURL, objectType, foriegnId);
+    console.log('   getOpenHimId start ', openHimURL, objectType, foriegnId);
     let url
     let response = {'id':'','result':'', 'error': ''}
     const queryPath = '/fhir/' + objectType + '?identifier=' + foriegnId
@@ -168,6 +200,7 @@ const getOpenHimId = function(openHimURL, objectType, foriegnId, attempt = 0){
                 response.result = 'found'
             } else {
                 response.result = 'not_found'
+                response.error = 'user not found in OpenHIM'
                 // try 4 times in case OpenHIM hasn't processed the data just yet
                 // todo - add 500-1000ms sleep in here
                 while (attempt != 4){
@@ -180,13 +213,14 @@ const getOpenHimId = function(openHimURL, objectType, foriegnId, attempt = 0){
         })
         .catch(e => {
             if (e.statusCode == 401) {
-                console.log('   Bad authentication when getting the user ', e.message)
-                response.error = 'getOpenHimIdByForiegnId: Bad authentication when getting the user ' + e.message
+                response.result = 'auth_error'
+                console.log('   Bad authentication when getting the user from OpenHIM ', e.message)
+                response.error = 'getOpenHimIdByForiegnId: Bad authentication when getting the user from OpenHIM ' + e.message
             } else {
+                response.result = 'error'
                 console.log('   An error while getting the user - ', e.statusCode)
                 response.error = 'getOpenHimIdByForiegnId: ' + e.message
             }
-            response.result = 'error'
             return response
         })
 }
