@@ -66,7 +66,7 @@ app.listen(port, () => {
 })
 
 const sendResult = function(res, result){
-    let status = 501
+    let status = 500
     if (result != undefined) {
         if ((result.result == 'success' || result.result == 'found')) {
             status = 200;
@@ -111,7 +111,7 @@ const getChtUser = function(chtUrl, chtId){
             return response
         })
         .catch(e => {
-            // todo - these errors aren't getting pushed up such that if auth failes against CHT,
+            // todo - these errors aren't getting pushed up such that if auth fails against CHT,
             // upstream callers don't get 'auth_error' in 'result'
             if (e.statusCode == 401) {
                 response.result = 'auth_error'
@@ -163,6 +163,9 @@ const setChtExternalId = function(chtUrl, chtId, externalId){
                     response.result = 'error'
                     return response
                 }
+            } else {
+                // failed to fetch user, return chtUser instead of response like above
+                return chtUser
             }
         })
         .catch(e => {
