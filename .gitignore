@@ -2,3 +2,4 @@ node_modules
 .idea
 docker/nginx/error.log
 docker/cache
+diym.conf.yml

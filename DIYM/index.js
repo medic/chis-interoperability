@@ -1,24 +1,37 @@
-import request from 'request-promise-native'
 'use strict'
+import request from 'request-promise-native'
 import express from 'express'
+import yaml_config from 'node-yaml-config'
+
 const app = express()
 app.use(express.json());
+let port, OpenHimURL, chtUrl
+let config = {}
 
 // todo - put URL, login, password in a config file - add dist of config file
-const OpenHimURL = 'https://test:test@192-168-68-40.my.local-ip.co:5002'
-const chtUrl = 'https://medic:password@192-168-68-40.my.local-ip.co'
 
-// Allow port override for testing
-let port = 5051
+// Allow port and config file override  for testing
 if(process.env.DEV_PORT){
     port = process.env.DEV_PORT
+    config = yaml_config.load('../DIYM/config/diym.conf.yml')
+    OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
+    chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
+} else {
+    port = 5051
+    config = yaml_config.load('/etc/diym/diym.conf.yml')
+    OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
+    chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
 }
+
 
 // process POSTs to /join_object/:foriegnSystem
 // can test with:
-//   curl -X POST -H "Content-Type: application/json" -d @cht-config/sample.patient.json http://localhost:5053/join_object/chT
+//   curl -X POST -H "Content-Type: application/json" -d @cht-config/sample.cht.patient.json http://localhost:5053/join_object/chT
 // for dev use custom port with nodemon for reload
 //   DEV_PORT=5053 nodemon index.js
+
+// todo - audit logging. we're currently logging the login/pass for OpenHIM and CHT instances
+
 // todo - add authentication to this request
 app.post('/join_object/:foriegnSystem', function (req, res) {
     console.log('')
