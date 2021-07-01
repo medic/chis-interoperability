@@ -363,7 +363,7 @@
     "FHIR_patient": {
       "relevant_to": "doc.type === 'person' && doc.role == 'patient'",
       "destination": {
-        "base_url": "https://192-168-68-108.my.local-ip.co:5002",
+        "base_url": "https://cop.app.medicmobile.org:5002",
         "path": "/fhir/Patient",
         "auth": {
           "type": "basic",
@@ -400,7 +400,7 @@
     "FHIR_CHT_id": {
       "relevant_to": "doc.type === 'person' && doc.role == 'patient'",
       "destination": {
-        "base_url": "https://192-168-68-108.my.local-ip.co:5051",
+        "base_url": "https://cop.app.medicmobile.org:5003",
         "path": "/join_object/cht/"
       },
       "mapping": {
@@ -432,7 +432,7 @@
     "FHIR_practitioner": {
       "relevant_to": "doc.type === 'person' && (doc.role == 'chw' || doc.role == 'nurse' )",
       "destination": {
-        "base_url": "https://192-168-68-108.my.local-ip.co:5002",
+        "base_url": "https://cop.app.medicmobile.org:5002",
         "path": "/fhir/Practitioner",
         "auth": {
           "type": "basic",
