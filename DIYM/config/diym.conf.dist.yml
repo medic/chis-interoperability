@@ -17,19 +17,19 @@ default:
     transport: "https"
 
   chw_systems:
-    - item: cht
+    cht:
       user: "medic"
       password: "password"
       url: "192-168-68-108.my.local-ip.co"
       port: 5002
       transport: "https"
-    - item: commcare
+    commcare:
       user: "test"
       password: "test"
       url: "192-168-68-108.my.local-ip.co"
       port: 5002
       transport: "https"
-    - item: opensrp
+    opensrp:
       user: "test"
       password: "test"
       url: "192-168-68-108.my.local-ip.co"

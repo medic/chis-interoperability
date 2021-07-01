@@ -37,53 +37,46 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
     console.log('')
     console.log('START')
 
+    let sent = false
+    let okToGo = true
+    let status = 201
+    let chtId, lookupResult, result
+
     try {
         config = yaml_config.load(configFile)
     } catch (e) {
         console.log('No or invalid config file, DIYM will always fail: ', e.message)
     }
 
-    let sent = false
-    let status = 201
-    let validConfig, validId, chtId, lookupResult, result
-
     try {
         verfiyConfig()
-        console.log('config.chw_systems:', config.chw_systems)
-        validConfig = true
-
-        OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
-        chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
-        console.log(config.chw_system)
-        OpenHimURL = config.openhim.transport +
-            config.openhim.user + ':' +
-            config.openhim.password + '@' +
-            config.openhim.url + ':' +
-            config.openhim.port
-        chtUrl = config.chw_system['cht'].transport +
-            config.openhim.user + ':' +
-            config.openhim.password + '@' +
-            config.openhim.url + ':' +
-            config.openhim.port
+        OpenHimURL = buildUrl(config.openhim)
+        chtUrl = buildUrl(config.chw_systems.cht)
     } catch (e) {
         status = 500
         console.log('   Bad config: ', e.message)
         res.status(status).send({ 'id':'','result':'error', 'error': 'Bad config. Error: ' + e.message})
-        validConfig = false
+        okToGo = false
+    }
+
+    if (!authenticate(req)){
+        status = 401
+        console.log('   Bad auth passed to DIYM')
+        res.status(status).send({ 'id':'','result':'error', 'error': 'Bad auth passed to DIYM'})
+        okToGo = false
     }
 
     try {
         chtId = req.body.identifier.value
-        validId = true
     } catch (e) {
         console.log('   Error in POST data from client', e.message);
         status = 500;
         res.status(status).send({ 'id':'','result':'error', 'error': 'Error in POST data from client. Error: ' + e.message })
-        validId = false
+        okToG = false
     }
 
     const foriegnSystem = req.params.foriegnSystem.toLowerCase()
-    if (foriegnSystem == 'cht' && validId == true && validConfig == true){
+    if (foriegnSystem == 'cht' && okToGo == true){
         getOpenHimId(OpenHimURL, 'Patient', chtId)
             .then(lookupResult => {
                 if (lookupResult.result == 'found') {
@@ -108,6 +101,33 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
 app.listen(port, () => {
     console.log(`Server listening on port ${port}...`)
 })
+
+const authenticate = function (req){
+    let login, password
+    if(req.headers.authorization) {
+        const base64Credentials = req.headers.authorization.split(' ')[1];
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('utf8');
+        [login, password] = credentials.split(':');
+    }
+    let i = 0;
+    let found = false
+    do {
+        if (login == config.diym_credentials[i].login && password == config.diym_credentials[i].login){
+            found = true
+            break
+        }
+        i++
+    } while (config.diym_credentials.length > i );
+    return found
+}
+
+const buildUrl = function (parts){
+    return parts.transport  + '://' +
+        parts.user + ':' +
+        parts.password + '@' +
+        parts.url + ':' +
+        parts.port
+}
 
 const verfiyConfig = function (){
     if(config.diym_credentials == undefined || config.diym_credentials.length == 0){
