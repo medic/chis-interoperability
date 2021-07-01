@@ -59,24 +59,30 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
         okToGo = false
     }
 
-    if (!authenticate(req)){
+    if (okToGo && !authenticate(req)){
         status = 401
         console.log('   Bad auth passed to DIYM')
         res.status(status).send({ 'id':'','result':'error', 'error': 'Bad auth passed to DIYM'})
         okToGo = false
     }
 
-    try {
-        chtId = req.body.identifier.value
-    } catch (e) {
-        console.log('   Error in POST data from client', e.message);
-        status = 500;
-        res.status(status).send({ 'id':'','result':'error', 'error': 'Error in POST data from client. Error: ' + e.message })
-        okToG = false
+    if (okToGo) {
+        try {
+            chtId = req.body.identifier.value
+        } catch (e) {
+            console.log('   Error in POST data from client', e.message);
+            status = 500;
+            res.status(status).send({
+                'id': '',
+                'result': 'error',
+                'error': 'Error in POST data from client. Error: ' + e.message
+            })
+            okToGo = false
+        }
     }
 
     const foriegnSystem = req.params.foriegnSystem.toLowerCase()
-    if (foriegnSystem == 'cht' && okToGo == true){
+    if (okToGo && foriegnSystem == 'cht'){
         getOpenHimId(OpenHimURL, 'Patient', chtId)
             .then(lookupResult => {
                 if (lookupResult.result == 'found') {
