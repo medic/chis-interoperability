@@ -14,13 +14,9 @@ let config = {}
 if(process.env.DEV_PORT){
     port = process.env.DEV_PORT
     configFile = '../DIYM/config/diym.conf.yml'
-    // OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
-    // chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
 } else {
     port = 5051
     configFile = '/etc/diym/diym.conf.yml'
-    // OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
-    // chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
 }
 
 
