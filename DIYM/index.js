@@ -13,7 +13,7 @@ if(process.env.DEV_PORT){
     port = process.env.DEV_PORT
     configFile = '../DIYM/config/diym.conf.yml'
 } else {
-    port = 5051
+    port = 5003
     configFile = '/etc/diym/diym.conf.yml'
 }
 

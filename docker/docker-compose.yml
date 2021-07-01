@@ -10,7 +10,7 @@ services:
       - api_authenticationTypes=["token", "basic"]
       - authentication_enableCustomTokenAuthentication=true
     ports:
-      - "5000:5000"
+#      - "5000:5000"
       - "5001:5001"
       - "5050:5050"
       - "5052:5052"
@@ -67,7 +67,7 @@ services:
       - 8080:8080
       - 9001:9001
       - 5002:5002
-      - 5051:5051
+      - 5003:5003
 
 volumes:
   hapi-mysql:

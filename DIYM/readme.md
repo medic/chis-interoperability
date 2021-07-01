@@ -6,7 +6,7 @@ Currently, there is only an integration with the CHT, but it could be extended t
 
 ## Installation & Configuration
 
-By default, when deploying the [OpenHIM via this repo](../), an un-configured DIYM is deployed for you on port `5051`.  To configure it, update the OpenHIM URL and credentials and the CHT URL and credentials in the config file. To do this, copy the `./config/diym.conf.dist.yml` to  `./config/diym.conf.dist.yml` and edit the file in the `openhim` and `chw_systems` sections respectively.
+By default, when deploying the [OpenHIM via this repo](../), an un-configured DIYM is deployed for you on port `5003`.  To configure it, update the OpenHIM URL and credentials and the CHT URL and credentials in the config file. To do this, copy the `./config/diym.conf.dist.yml` to  `./config/diym.conf.dist.yml` and edit the file in the `openhim` and `chw_systems` sections respectively.
 
 As well, you'll need to update the credentials for the DIYM which the service systems will use to authenticate with. This is found in the `diym_credentials` section.
 
@@ -24,7 +24,7 @@ Note: This is a bad experience for development as it's slow and tedious.  See th
 
 When doing development on DIYM, you should use [nodemon](https://nodemon.io/) and not use docker.  This will automatically reload your node app any time there are changes.  When you're done with your changes and what to deploy them, follow the "Updating" section above. 
 
-Start by installing `nodemon` with `sudo npm i nodemon -g`. You'll be prompted to either log back in or run some commands to sync up your environment. After than, install the DIYM dependencies with `npm install`.  Then you can start the app in development mode by prepending `DEV_PORT` and specifying the port you want to use: `DEV_PORT=5053 nodemon index.js`
+Start by installing `nodemon` with `sudo npm i nodemon -g`. You'll be prompted to either log back in or run some commands to sync up your environment. After than, install the DIYM dependencies with `npm install`.  Then you can start the app in development mode by prepending `DEV_PORT` and specifying the port you want to use: `DEV_PORT=5005 nodemon index.js`
 
 Since DIYM only supports the CHT now, start by creating a Patient in the CHT and grabbing the ID for it.  Then update `../cht-config/sample.cht.patient.json` with the ID of your Patient.  So if you had a new CHT Patient with ID `1234-5678-90abcd`, it would like this in the json:
 
@@ -38,5 +38,5 @@ Since DIYM only supports the CHT now, start by creating a Patient in the CHT and
 With this in place, you can do mock calls to the DIYM with a CLI call using curl. Assuming your `DEV_PORT` is set to `5053`, your IP is `192.168.68.40` and you're in the `chis-interoperability` directory, the call would be:
 
 ```shell
-curl -sv -X POST -H "Content-Type: application/json" -d @cht-config/sample.cht.patient.json http://test:test@localhost:5053/join_object/cht
+curl -sv -X POST -H "Content-Type: application/json" -d @cht-config/sample.cht.patient.json http://test:test@localhost:5005/join_object/cht
 ```
