@@ -5,7 +5,7 @@ import yaml_config from 'node-yaml-config'
 
 const app = express()
 app.use(express.json());
-let port, OpenHimURL, chtUrl
+let port, OpenHimURL, chtUrl, configFile
 let config = {}
 
 // todo - put URL, login, password in a config file - add dist of config file
@@ -13,14 +13,14 @@ let config = {}
 // Allow port and config file override  for testing
 if(process.env.DEV_PORT){
     port = process.env.DEV_PORT
-    config = yaml_config.load('../DIYM/config/diym.conf.yml')
-    OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
-    chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
+    configFile = '../DIYM/config/diym.conf.yml'
+    // OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
+    // chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
 } else {
     port = 5051
-    config = yaml_config.load('/etc/diym/diym.conf.yml')
-    OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
-    chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
+    configFile = '/etc/diym/diym.conf.yml'
+    // OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
+    // chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
 }
 
 
@@ -36,13 +36,44 @@ if(process.env.DEV_PORT){
 app.post('/join_object/:foriegnSystem', function (req, res) {
     console.log('')
     console.log('START')
+
+    try {
+        config = yaml_config.load(configFile)
+    } catch (e) {
+        console.log('No or invalid config file, DIYM will always fail: ', e.message)
+    }
+
     let sent = false
     let status = 201
-    let validId, chtId, lookupResult, result
+    let validConfig, validId, chtId, lookupResult, result
+
+    try {
+        verfiyConfig()
+        console.log('config.chw_systems:', config.chw_systems)
+        validConfig = true
+
+        OpenHimURL = 'https://test:test@192-168-68-108.my.local-ip.co:5002'
+        chtUrl = 'https://medic:password@192-168-68-108.my.local-ip.co'
+        console.log(config.chw_system)
+        OpenHimURL = config.openhim.transport +
+            config.openhim.user + ':' +
+            config.openhim.password + '@' +
+            config.openhim.url + ':' +
+            config.openhim.port
+        chtUrl = config.chw_system['cht'].transport +
+            config.openhim.user + ':' +
+            config.openhim.password + '@' +
+            config.openhim.url + ':' +
+            config.openhim.port
+    } catch (e) {
+        status = 500
+        console.log('   Bad config: ', e.message)
+        res.status(status).send({ 'id':'','result':'error', 'error': 'Bad config. Error: ' + e.message})
+        validConfig = false
+    }
 
     try {
         chtId = req.body.identifier.value
-        // chtId = 'bar'
         validId = true
     } catch (e) {
         console.log('   Error in POST data from client', e.message);
@@ -52,7 +83,7 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
     }
 
     const foriegnSystem = req.params.foriegnSystem.toLowerCase()
-    if (foriegnSystem == 'cht' && validId == true){
+    if (foriegnSystem == 'cht' && validId == true && validConfig == true){
         getOpenHimId(OpenHimURL, 'Patient', chtId)
             .then(lookupResult => {
                 if (lookupResult.result == 'found') {
@@ -77,6 +108,23 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
 app.listen(port, () => {
     console.log(`Server listening on port ${port}...`)
 })
+
+const verfiyConfig = function (){
+    if(config.diym_credentials == undefined || config.diym_credentials.length == 0){
+        throw Error('Missing credentials for DIYM');
+    }
+    if (config.openhim == undefined){
+        throw Error('Missing config.openhim section');
+    }
+    if (config.openhim.user == undefined ||
+        config.openhim.password == undefined ||
+        config.openhim.url == undefined ||
+        config.openhim.port == undefined ||
+        config.openhim.transport == undefined
+    ){
+        throw Error('Incomplete config.openhim section');
+    }
+}
 
 const sendResult = function(res, result){
     let status = 500
