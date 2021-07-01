@@ -52,6 +52,8 @@ services:
   diym:
     container_name: diym
     build: ../DIYM/.
+    volumes:
+      - ../DIYM/config:/etc/diym
 
   nginx:
     image: nginx:latest
@@ -66,8 +68,6 @@ services:
       - 9001:9001
       - 5002:5002
       - 5051:5051
-    volumes:
-      - ../dyim/conf:/etc/dyim
 
 volumes:
   hapi-mysql:

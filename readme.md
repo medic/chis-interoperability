@@ -35,10 +35,6 @@ See `sudo cat ~root/logins.txt` for credentials for these on `cop.app.medicmobil
 * `opensrp`
 * `commcare` 
 
-Mediators:
-
-Currently none, but presumably some will be used to integrate with OpenSRP.
-
 ## Prerequisites 
 
   * dedicated Ubuntu 18.04 server
@@ -56,7 +52,7 @@ This process is safe to re-run entirely or in sub-sections:
 1. `cd` into the `/srv/chis/` directory
 1. Get certificates for your domain via `certbot` with `sudo certbot certonly --nginx`.  
 
-   Ensure the certficates are in `/etc/letsencrypt/live` when this command is done.
+   Ensure the certificates are in `/etc/letsencrypt/live` when this command is done.
 1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.

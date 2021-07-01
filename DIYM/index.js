@@ -8,8 +8,6 @@ app.use(express.json());
 let port, OpenHimURL, chtUrl, configFile
 let config = {}
 
-// todo - put URL, login, password in a config file - add dist of config file
-
 // Allow port and config file override  for testing
 if(process.env.DEV_PORT){
     port = process.env.DEV_PORT
@@ -19,16 +17,6 @@ if(process.env.DEV_PORT){
     configFile = '/etc/diym/diym.conf.yml'
 }
 
-
-// process POSTs to /join_object/:foriegnSystem
-// can test with:
-//   curl -X POST -H "Content-Type: application/json" -d @cht-config/sample.cht.patient.json http://localhost:5053/join_object/chT
-// for dev use custom port with nodemon for reload
-//   DEV_PORT=5053 nodemon index.js
-
-// todo - audit logging. we're currently logging the login/pass for OpenHIM and CHT instances
-
-// todo - add authentication to this request
 app.post('/join_object/:foriegnSystem', function (req, res) {
     console.log('')
     console.log('START')
@@ -39,9 +27,11 @@ app.post('/join_object/:foriegnSystem', function (req, res) {
     let chtId, lookupResult, result
 
     try {
-        config = yaml_config.load(configFile)
+        config = yaml_config.reload(configFile)
     } catch (e) {
-        console.log('No or invalid config file, DIYM will always fail: ', e.message)
+        // don't exit here, we want the app to start even if it will always fail
+        // this enables users to go back and add a config file
+        console.log('   No or invalid config file, DIYM will always fail: ', e.message)
     }
 
     try {
