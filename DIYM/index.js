@@ -104,7 +104,7 @@ const authenticate = function (req){
     let i = 0;
     let found = false
     do {
-        if (login == config.diym_credentials[i].login && password == config.diym_credentials[i].login){
+        if (login == config.diym_credentials[i].login && password == config.diym_credentials[i].password){
             found = true
             break
         }
