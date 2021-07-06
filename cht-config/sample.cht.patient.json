@@ -1,0 +1,27 @@
+
+{
+  "resourceType": "Patient",
+  "gender": "female",
+  "name": [
+    {
+      "use": "official",
+      "family": "bertha",
+      "given": [
+        ""
+      ]
+    }
+  ],
+  "identifier": {
+    "use": "usual",
+    "value": "cht/aab82246-d328-484d-8522-fe22589c6868"
+  },
+  "birthDate": "1999-04-25",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "",
+      "use": "mobile"
+    }
+  ],
+  "active": true
+}

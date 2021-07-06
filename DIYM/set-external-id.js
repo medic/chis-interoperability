@@ -8,21 +8,22 @@ const argv = minimist(process.argv.slice(2), {
   }
 });
 
-if(argv.h || !argv.couchurl || !argv.uid || !argv.eid) {
+if(argv.h || !argv.couchurl || !argv.uid || !argv.value || !argv.field) {
   console.log(`
-Set external_id for a user directly in CouchDB - does not use CHT API.
+Set field value for a user directly in CouchDB - does not use CHT API.
 
 NOTE: FOR DEVELOPMENT ONLY! DOES NOT CHECK FOR VALID TLS CERTIFICATES!!
 
 Usage:
       node set-external-id.js -h | --help
-      node set-external-id.js --couchurl https://medic:password@localhost --uid 12345 --eid 54321
+      node set-external-id.js --couchurl https://medic:password@localhost --uid 12345 --field external_id --value 54321
 
 Options:
     -h --help     Show this screen.
     --couchurl    The url for couchdb. Must include HTTP basic auth credentials if needed.
     --uid         The user you want to update
-    --eid         The value to set external_id to
+    --field       The field to set
+    --value       The value to set to field
 
 `);
   process.exit(0);
@@ -52,7 +53,25 @@ const execute = async () => {
     process.exit(0);
   }
 
-  console.log('got user: ' + JSON.stringify(user));
+  console.log('Found user ');
+  console.log('     Name: ' + user.name);
+  console.log('     Rev: ' + user._rev);
+  console.log('     ' + argv.field + ' old value: ' + user[argv.field]);
+
+  const postOptions = Object.assign({}, options);
+  postOptions.uri = url.href + '?rev=' + user._rev;
+  user[argv.field] = argv.value;
+  postOptions.body = user;
+  
+  try {
+    await rpn.put(postOptions);
+  } catch (e) {
+    console.log('An error while updating the user - ', e.message);
+    process.exit(0);
+  }
+
+  console.log('success');
 };
+
 
 execute();

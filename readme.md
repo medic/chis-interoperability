@@ -35,10 +35,6 @@ See `sudo cat ~root/logins.txt` for credentials for these on `cop.app.medicmobil
 * `opensrp`
 * `commcare` 
 
-Mediators:
-
-Currently none, but presumably some will be used to integrate with OpenSRP.
-
 ## Prerequisites 
 
   * dedicated Ubuntu 18.04 server
@@ -49,14 +45,14 @@ Currently none, but presumably some will be used to integrate with OpenSRP.
   * `certbot` [installed](https://certbot.eff.org/).  
  *  `docker` and `docker-compose` [installed](https://github.com/openhie/instant/tree/master/core/docker#prerequisites).
 
-## Install
+## Install & First Time Run
 
 This process is safe to re-run entirely or in sub-sections:
 
 1. `cd` into the `/srv/chis/` directory
 1. Get certificates for your domain via `certbot` with `sudo certbot certonly --nginx`.  
 
-   Ensure the certficates are in `/etc/letsencrypt/live` when this command is done.
+   Ensure the certificates are in `/etc/letsencrypt/live` when this command is done.
 1. Clone this repo `git clone https://github.com/medic/chis-interoperability.git`
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Add yourself to the `docker` group by running the `./configure-docker.sh` script. Enter your `sudo` password when prompted. You may see some errors - this is OK.
@@ -64,18 +60,19 @@ This process is safe to re-run entirely or in sub-sections:
 1. Check the `init` call was successful with `docker ps`. The output should show 8 containers like this:
  
     ```bash
-    CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                     NAMES
-    cfadf2838d46   nginx:latest                 "/docker-entrypoint.…"   8 seconds ago    Up 3 seconds    0.0.0.0:5002->5002/tcp, :::5002->5002/tcp, 80/tcp, 0.0.0.0:9001->9001/tcp, :::9001->9001/tcp                                                                              nginx-proxy
-    517912b14eee   jembi/openhim-core:5         "docker-entrypoint.s…"   8 seconds ago    Up 4 seconds    0.0.0.0:5000-5001->5000-5001/tcp, :::5000-5001->5000-5001/tcp, 0.0.0.0:5050-5052->5050-5052/tcp, :::5050-5052->5050-5052/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   openhim-core
-    07475677901d   hapiproject/hapi:v5.2.1      "catalina.sh run"        4 minutes ago    Up 5 seconds    8080/tcp                                                                                                                                                                  hapi-fhir
-    288cd025138e   mysql:5.7                    "docker-entrypoint.s…"   4 minutes ago    Up 6 seconds    3306/tcp, 33060/tcp                                                                                                                                                       hapi-mysql
-    945ac6a8553d   jembi/openhim-console:1.14   "/docker-entrypoint.…"   4 minutes ago    Up 7 seconds    80/tcp                                                                                                                                                                    openhim-console
-    e3eaa16be99b   mongo:4.2                    "docker-entrypoint.s…"   30 minutes ago   Up 30 minutes   27017/tcp                                                                                                                                                                 mongo-1
-    f9986917f559   mongo:4.2                    "docker-entrypoint.s…"   4 hours ago      Up 30 minutes   27017/tcp                                                                                                                                                                 mongo-2
-    18b17cf57d6b   mongo:4.2                    "docker-entrypoint.s…"   4 hours ago      Up 30 minutes   27017/tcp                                                                                                                                                                 mongo-3
+    CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                                NAMES
+    6abddc0db494   nginx:latest                 "/docker-entrypoint.…"   17 seconds ago   Up 15 seconds   0.0.0.0:5002->5002/tcp, :::5002->5002/tcp, 0.0.0.0:5051->5051/tcp, :::5051->5051/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 80/tcp, 0.0.0.0:9001->9001/tcp, :::9001->9001/tcp   nginx-proxy
+    f9e318f9c31a   jembi/openhim-core:5         "docker-entrypoint.s…"   19 seconds ago   Up 17 seconds   0.0.0.0:5000-5001->5000-5001/tcp, :::5000-5001->5000-5001/tcp, 0.0.0.0:5050->5050/tcp, :::5050->5050/tcp, 0.0.0.0:5052->5052/tcp, :::5052->5052/tcp                                  openhim-core
+    9d6716697d6f   instant_diym                 "docker-entrypoint.s…"   29 seconds ago   Up 28 seconds   5051/tcp                                                                                                                                                                             diym
+    25311fbbcc4f   hapiproject/hapi:v5.2.1      "catalina.sh run"        2 months ago     Up 2 months     8080/tcp                                                                                                                                                                             hapi-fhir
+    e09773683681   jembi/openhim-console:1.14   "/docker-entrypoint.…"   2 months ago     Up 2 months     80/tcp                                                                                                                                                                               openhim-console
+    c02a96962d4b   mysql:5.7                    "docker-entrypoint.s…"   2 months ago     Up 2 months     3306/tcp, 33060/tcp                                                                                                                                                                  hapi-mysql
+    8da6786552cf   mongo:4.2                    "docker-entrypoint.s…"   2 months ago     Up 2 months     27017/tcp                                                                                                                                                                            mongo-2
+    f70681545611   mongo:4.2                    "docker-entrypoint.s…"   2 months ago     Up 2 months     27017/tcp                                                                                                                                                                            mongo-3
+    0a6b794b751f   mongo:4.2                    "docker-entrypoint.s…"   2 months ago     Up 2 months     27017/tcp                                                                                                                                                                            mongo-1
     ``` 
-1. Visit [the heartbeat URL](https://cop.app.medicmobile.org:8080/heartbeat) and accept the self signed certificate. This is required for the next step as the console will fail to do a `POST` to the FHIR core unless the certificate is accepted first.
-1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with the defaulte username `root@openhim.org` and password `instant101`. Change the `root@openhim.org` password as well as the [Client password](https://cop.app.medicmobile.org:9001/#!/clients) for the `test` client. Create any additional logins that are needed.
+
+1. You should now be to log in on the [FHIR admin console](https://cop.app.medicmobile.org:9001) with the default username `root@openhim.org` and password `instant101`. Change the `root@openhim.org` password as well as the [Client password](https://cop.app.medicmobile.org:9001/#!/clients) for the `test` client. Create any additional client logins that are needed.
 
 ## Docker Restart, Shut-down & Delete
 
@@ -98,4 +95,4 @@ Assuming your ip is `192.168.68.40` and your user has permission to run `docker-
 1. `cd` into the newly cloned repo into the `./chis-interoperability/docker` directory
 1. Initialize the deployment with `DEV=192.168.68.40 ./compose.sh init`.  All subsequent calls of `up`, `down` and `destroy` should be made via `DEV=192.168.68.40 ./compose.sh COMMAND` 
 
-If you have an dev instance that is long running and the certificates expire. you can renew them with `./docker/refresh-local-ip-certs.sh`
+If you have an dev instance that is long-running, and the certificates expire, you can renew them with `./docker/refresh-local-ip-certs.sh`

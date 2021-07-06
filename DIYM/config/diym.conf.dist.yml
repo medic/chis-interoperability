@@ -1,0 +1,33 @@
+
+diym_credentials:
+  - login: "test"
+    password: "test"
+#    - login: "test2"
+#      password: "test2"
+
+openhim:
+  user: "test"
+  password: "test"
+  url: "192-168-68-108.my.local-ip.co"
+  port: 5002
+  transport: "https"
+
+chw_systems:
+  cht:
+    user: "medic"
+    password: "password"
+    url: "192-168-68-108.my.local-ip.co"
+    port: 5002
+    transport: "https"
+#    system2:
+#      user: "test"
+#      password: "test"
+#      url: "192-168-68-108.my.local-ip.co"
+#      port: 5002
+#      transport: "https"
+#    system3:
+#      user: "test"
+#      password: "test"
+#      url: "192-168-68-108.my.local-ip.co"
+#      port: 5002
+#      transport: "https"
