@@ -2,7 +2,7 @@
 
 ## Overview 
 
-These steps use code directly take from the [OpenHIE Instant](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS Interoperability repository](https://github.com/medic/chis-interoperability) to provision an instance of the Instant OpenHIE on `cop.app.medicmobile.org`.
+These steps use code directly take from the [Instant OpenHIE](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS Interoperability repository](https://github.com/medic/chis-interoperability) to provision an instance of the Instant OpenHIE on `cop.app.medicmobile.org`.
 
 ### Services
 
