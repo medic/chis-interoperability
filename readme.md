@@ -4,6 +4,10 @@
 
 These steps use code directly take from the [Instant OpenHIE](https://github.com/openhie/instant/tree/master/core/docker) and located in the [CHIS Interoperability repository](https://github.com/medic/chis-interoperability) to provision an instance of the Instant OpenHIE on `cop.app.medicmobile.org`.
 
+### Status
+
+This project is still in a nascent state where a full end to end Loss To Follow Up (LTFU) process has not yet been implemented.  The goal will be to fully implement this [LTFU workflow](https://wiki.ohie.org/display/SUB/Use+Case+Summary:+Request+Community+Based+Follow-Up). 
+
 ### Services
 
 Services are currently available at these URLs:
